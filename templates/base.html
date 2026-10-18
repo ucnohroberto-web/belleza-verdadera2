@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7b315d">
+  <title>{% block titulo %}Belleza Verdadera{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/estilos.css') }}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-belleza">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{{ url_for('inicio') }}">✿ Belleza Verdadera</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuPrincipal">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}#registro">Registrar producto</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}#lista">Inventario</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('ayuda') }}">Ayuda</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <main class="container py-4 py-lg-5">
+    <header class="hero-belleza mb-4 mb-lg-5">
+      <p class="eyebrow mb-2">CATÁLOGO · CUIDADO PERSONAL</p>
+      <h1 class="display-6 fw-bold mb-2">Belleza Verdadera</h1>
+      <p class="lead mb-0">Organiza tus productos de belleza de forma sencilla.</p>
+    </header>
+    {% block contenido %}{% endblock %}
+  </main>
+  <footer class="container py-4 mt-4 border-top footer-belleza">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+      <span>✿ Belleza Verdadera</span>
+      <span>Proyecto escolar · CRUD y API REST</span>
+    </div>
+  </footer>
+  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

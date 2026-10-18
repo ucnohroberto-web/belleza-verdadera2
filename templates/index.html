@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<section id="registro" class="card panel-belleza mb-4 mb-lg-5">
+  <div class="card-body p-4 p-lg-5">
+    <div class="section-heading mb-4">
+      <span class="section-icon">＋</span>
+      <div>
+        <h2 class="h4 mb-1">Registrar producto</h2>
+        <p class="text-secondary mb-0">Agrega un producto al inventario.</p>
+      </div>
+    </div>
+    <form method="post" action="{{ url_for('agregar') }}" class="row g-3">
+      <div class="col-md-5">
+        <label for="nombre" class="form-label">Nombre del producto</label>
+        <input id="nombre" name="nombre" class="form-control" required maxlength="80" placeholder="Ej. Crema hidratante">
+      </div>
+      <div class="col-md-4">
+        <label for="categoria" class="form-label">Categoría</label>
+        <input id="categoria" name="categoria" class="form-control" required maxlength="40" placeholder="Ej. Cuidado facial">
+      </div>
+      <div class="col-md-3">
+        <label for="estado" class="form-label">Estado</label>
+        <select id="estado" name="estado" class="form-select" required>
+          <option value="">Selecciona</option>
+          {% for estado in estados %}
+          <option value="{{ estado }}">{{ estado }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 d-flex flex-wrap gap-2 mt-4">
+        <button type="submit" class="btn btn-belleza">Guardar producto</button>
+        <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section id="lista" class="card panel-belleza">
+  <div class="card-body p-4 p-lg-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+      <div>
+        <h2 class="h4 mb-1">Inventario de productos</h2>
+        <p class="text-secondary mb-0">Consulta, modifica o elimina los registros.</p>
+      </div>
+      <span class="count-pill">{{ productos|length }} producto(s)</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <caption>Productos registrados en Belleza Verdadera</caption>
+        <thead>
+          <tr><th scope="col">Nombre</th><th scope="col">Categoría</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr>
+        </thead>
+        <tbody>
+          {% for producto in productos %}
+          <tr>
+            <td class="fw-semibold">{{ producto.nombre }}</td>
+            <td>{{ producto.categoria }}</td>
+            <td>
+              {% if producto.estado == 'Disponible' %}
+              <span class="status status-disponible">Disponible</span>
+              {% else %}
+              <span class="status status-agotado">Agotado</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('editar', id=producto._id) }}">Editar</a>
+                <form method="post" action="{{ url_for('eliminar', id=producto._id) }}" onsubmit="return confirm('¿Eliminar este producto?');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-secondary py-5">Todavía no hay productos. Registra el primero usando el formulario.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="api-note mt-3">
+      <strong>API REST:</strong> consulta los productos en <code>/api/productos</code>.
+    </div>
+  </div>
+</section>
+{% endblock %}

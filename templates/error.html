@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block titulo %}Aviso · Belleza Verdadera{% endblock %}
+{% block contenido %}
+<div class="alert alert-danger rounded-4 p-4" role="alert">
+  <h2 class="h4">No se pudo completar la acción</h2>
+  <p>{{ mensaje }}</p>
+  <a class="btn btn-belleza" href="{{ url_for('inicio') }}">Volver al inicio</a>
+</div>
+{% endblock %}

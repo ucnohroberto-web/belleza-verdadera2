@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block titulo %}Editar producto · Belleza Verdadera{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <section class="card panel-belleza">
+      <div class="card-body p-4 p-lg-5">
+        <h2 class="h4 mb-1">Editar producto</h2>
+        <p class="text-secondary mb-4">Actualiza los datos y guarda los cambios.</p>
+        <form method="post" action="{{ url_for('editar', id=producto._id) }}">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre del producto</label>
+            <input id="nombre" name="nombre" class="form-control" value="{{ producto.nombre }}" required maxlength="80">
+          </div>
+          <div class="mb-3">
+            <label for="categoria" class="form-label">Categoría</label>
+            <input id="categoria" name="categoria" class="form-control" value="{{ producto.categoria }}" required maxlength="40">
+          </div>
+          <div class="mb-4">
+            <label for="estado" class="form-label">Estado</label>
+            <select id="estado" name="estado" class="form-select" required>
+              {% for estado in estados %}
+              <option value="{{ estado }}" {% if producto.estado == estado %}selected{% endif %}>{{ estado }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-belleza">Guardar cambios</button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('inicio') }}#lista">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
