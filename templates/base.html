@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#7b315d">
   <title>{% block titulo %}Belleza Verdadera{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/estilos.css') }}">
 </head>
@@ -27,6 +30,29 @@
   </nav>
   <main class="container py-4 py-lg-5">
     <header class="hero-belleza mb-4 mb-lg-5">
+      <svg class="hero-flor" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="petalo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffe9f3" stop-opacity=".95"/>
+            <stop offset="1" stop-color="#e9a9c6" stop-opacity=".55"/>
+          </linearGradient>
+          <radialGradient id="centro" cx=".35" cy=".3" r=".8">
+            <stop offset="0" stop-color="#f6e3bd"/>
+            <stop offset="1" stop-color="#c9a36a"/>
+          </radialGradient>
+        </defs>
+        <g transform="translate(100 100)" fill="url(#petalo)" stroke="#ffffff66" stroke-width="1">
+          <ellipse cx="0" cy="-52" rx="22" ry="46"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(45)"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(90)"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(135)"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(180)"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(225)"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(270)"/>
+          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(315)"/>
+        </g>
+        <circle cx="100" cy="100" r="17" fill="url(#centro)"/>
+      </svg>
       <p class="eyebrow mb-2">CATÁLOGO · CUIDADO PERSONAL</p>
       <h1 class="display-6 fw-bold mb-2">Belleza Verdadera</h1>
       <p class="lead mb-0">Organiza tus productos de belleza de forma sencilla.</p>

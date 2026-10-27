@@ -53,7 +53,12 @@
         <tbody>
           {% for producto in productos %}
           <tr>
-            <td class="fw-semibold">{{ producto.nombre }}</td>
+            <td class="fw-semibold">
+              <div class="producto-nombre">
+                <span class="monograma" aria-hidden="true">{{ producto.nombre[:1]|upper }}</span>
+                <span>{{ producto.nombre }}</span>
+              </div>
+            </td>
             <td>{{ producto.categoria }}</td>
             <td>
               {% if producto.estado == 'Disponible' %}
@@ -72,7 +77,9 @@
             </td>
           </tr>
           {% else %}
-          <tr><td colspan="4" class="text-center text-secondary py-5">Todavía no hay productos. Registra el primero usando el formulario.</td></tr>
+          <tr><td colspan="4" class="text-center text-secondary py-5">
+            <div class="fila-vacia"><span class="flor-vacia" aria-hidden="true">✿</span>Todavía no hay productos. Registra el primero usando el formulario.</div>
+          </td></tr>
           {% endfor %}
         </tbody>
       </table>
