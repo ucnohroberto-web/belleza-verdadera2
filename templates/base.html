@@ -1,70 +1,62 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#7b315d">
-  <title>{% block titulo %}Belleza Verdadera{% endblock %}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/estilos.css') }}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7b315d">
+<title>{% block titulo %}Belleza Verdadera{% endblock %}</title>
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo.svg') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/estilos.css') }}">
 </head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark navbar-belleza">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="{{ url_for('inicio') }}">✿ Belleza Verdadera</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="menuPrincipal">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}#registro">Registrar producto</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}#lista">Inventario</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('ayuda') }}">Ayuda</a></li>
-        </ul>
-      </div>
+<body class="{% if session.get('usuario') %}app-bg{% else %}login-bg{% endif %}">
+<nav class="navbar navbar-expand-lg navbar-dark navbar-belleza">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('inicio') }}">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="34" height="34">
+      <span class="brand-text">Belleza Verdadera</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Abrir menú"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="menuPrincipal">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+      {% if session.get('usuario') %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('inicio') }}">Registro e inventario</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('catalogo') }}">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('registro_clientes') }}">Clientes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('registro_ventas') }}">Ventas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('ayuda') }}">Ayuda</a></li>
+        <li class="nav-item ms-lg-2"><form method="post" action="{{ url_for('salir') }}"><button class="btn btn-sm btn-outline-light rounded-pill px-3" type="submit">Cerrar sesión</button></form></li>
+      {% endif %}
+      </ul>
     </div>
-  </nav>
-  <main class="container py-4 py-lg-5">
-    <header class="hero-belleza mb-4 mb-lg-5">
-      <svg class="hero-flor" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
-        <defs>
-          <linearGradient id="petalo" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#ffe9f3" stop-opacity=".95"/>
-            <stop offset="1" stop-color="#e9a9c6" stop-opacity=".55"/>
-          </linearGradient>
-          <radialGradient id="centro" cx=".35" cy=".3" r=".8">
-            <stop offset="0" stop-color="#f6e3bd"/>
-            <stop offset="1" stop-color="#c9a36a"/>
-          </radialGradient>
-        </defs>
-        <g transform="translate(100 100)" fill="url(#petalo)" stroke="#ffffff66" stroke-width="1">
-          <ellipse cx="0" cy="-52" rx="22" ry="46"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(45)"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(90)"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(135)"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(180)"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(225)"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(270)"/>
-          <ellipse cx="0" cy="-52" rx="22" ry="46" transform="rotate(315)"/>
-        </g>
-        <circle cx="100" cy="100" r="17" fill="url(#centro)"/>
-      </svg>
-      <p class="eyebrow mb-2">CATÁLOGO · CUIDADO PERSONAL</p>
-      <h1 class="display-6 fw-bold mb-2">Belleza Verdadera</h1>
-      <p class="lead mb-0">Organiza tus productos de belleza de forma sencilla.</p>
-    </header>
-    {% block contenido %}{% endblock %}
-  </main>
-  <footer class="container py-4 mt-4 border-top footer-belleza">
-    <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-      <span>✿ Belleza Verdadera</span>
-      <span>Proyecto escolar · CRUD y API REST</span>
-    </div>
-  </footer>
-  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  </div>
+</nav>
+{% if session.get('usuario') %}
+<main class="container py-4 py-lg-5">
+  <header class="hero-belleza mb-4 mb-lg-5">
+    <p class="eyebrow mb-2">{% block hero_eyebrow %}CUIDADO DE LA PIEL{% endblock %}</p>
+    <h1 class="hero-title mb-3">{% block hero_titulo %}Belleza Verdadera{% endblock %}</h1>
+    <span class="hero-divider" aria-hidden="true"></span>
+    <p class="lead mb-0">{% block hero_texto %}Administra tus productos, clientes y ventas en un solo lugar.{% endblock %}</p>
+  </header>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button></div>{% endfor %}{% endif %}{% endwith %}
+  {% block contenido %}{% endblock %}
+</main>
+<footer class="container py-4 mt-4 footer-belleza">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+    <span class="d-flex align-items-center gap-2"><img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="22" height="22"> Belleza Verdadera</span>
+    <span>Cuidado de la piel · Administración de productos y ventas</span>
+  </div>
+</footer>
+{% else %}
+<main class="container py-4">
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+  {% block acceso %}{% endblock %}
+</main>
+{% endif %}
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6f5ee"/><stop offset="1" stop-color="#bfe3d0"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e9cfa4"/><stop offset=".5" stop-color="#f8e8c8"/><stop offset="1" stop-color="#c9a672"/></linearGradient>
+<linearGradient id="white" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f1e5ec"/><stop offset=".35" stop-color="#ffffff"/><stop offset="1" stop-color="#eadbe4"/></linearGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8e3f69"/><stop offset=".4" stop-color="#c47ba1"/><stop offset="1" stop-color="#6e2a52"/></linearGradient>
+<linearGradient id="plum" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8d3e69"/><stop offset="1" stop-color="#5d2245"/></linearGradient>
+</defs>
+<rect width="600" height="600" fill="url(#bg)"/>
+<circle cx="300" cy="320" r="230" fill="#fff" opacity=".35"/>
+<circle cx="300" cy="320" r="170" fill="#fff" opacity=".3"/>
+<path d="M0,0 C25,-38 75,-38 100,0 C75,38 25,38 0,0Z" fill="#97cfb3" opacity="0.55" transform="translate(70 500) rotate(-60) scale(1.5)"/><path d="M0,0 C25,-38 75,-38 100,0 C75,38 25,38 0,0Z" fill="#97cfb3" opacity="0.45" transform="translate(120 560) rotate(-20) scale(1.1)"/><path d="M0,0 C25,-38 75,-38 100,0 C75,38 25,38 0,0Z" fill="#97cfb3" opacity="0.5" transform="translate(520 120) rotate(120) scale(1.4)"/><path d="M0,0 C25,-38 75,-38 100,0 C75,38 25,38 0,0Z" fill="#97cfb3" opacity="0.45" transform="translate(560 200) rotate(160) scale(1.0)"/><g fill="#fff"><circle cx="90" cy="130" r="6" opacity=".7"/><circle cx="520" cy="470" r="8" opacity=".6"/><circle cx="470" cy="70" r="4" opacity=".7"/><circle cx="140" cy="300" r="4" opacity=".6"/></g>
+<ellipse cx="300" cy="505" rx="150" ry="16" fill="#5d2245" opacity=".18"/>
+
+<defs><clipPath id="t"><path d="M252,190 H348 L380,458 H220 Z"/></clipPath></defs>
+<rect x="250" y="120" width="100" height="76" rx="12" fill="url(#gold)"/>
+<path d="M252,190 H348 L380,458 H220 Z" fill="url(#white)"/>
+<g clip-path="url(#t)"><rect x="200" y="290" width="200" height="100" fill="url(#plum)"/></g>
+<rect x="216" y="452" width="168" height="26" rx="5" fill="#d9c2cf"/>
+<g stroke="#b79aab" stroke-width="2" opacity=".6"><line x1="226" y1="457" x2="226" y2="473"/><line x1="240" y1="457" x2="240" y2="473"/><line x1="254" y1="457" x2="254" y2="473"/><line x1="268" y1="457" x2="268" y2="473"/><line x1="282" y1="457" x2="282" y2="473"/><line x1="296" y1="457" x2="296" y2="473"/><line x1="310" y1="457" x2="310" y2="473"/><line x1="324" y1="457" x2="324" y2="473"/><line x1="338" y1="457" x2="338" y2="473"/><line x1="352" y1="457" x2="352" y2="473"/><line x1="366" y1="457" x2="366" y2="473"/></g>
+<g transform="translate(300 340) scale(1.4)"><ellipse cx="0" cy="-15" rx="7.5" ry="14" fill="#fff" transform="rotate(0)"/><ellipse cx="0" cy="-15" rx="7.5" ry="14" fill="#fff" transform="rotate(60)"/><ellipse cx="0" cy="-15" rx="7.5" ry="14" fill="#fff" transform="rotate(120)"/><ellipse cx="0" cy="-15" rx="7.5" ry="14" fill="#fff" transform="rotate(180)"/><ellipse cx="0" cy="-15" rx="7.5" ry="14" fill="#fff" transform="rotate(240)"/><ellipse cx="0" cy="-15" rx="7.5" ry="14" fill="#fff" transform="rotate(300)"/><circle r="6.5" fill="#f3d9a8"/></g>
+</svg>
