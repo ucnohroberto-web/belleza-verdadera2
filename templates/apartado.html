@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block hero_eyebrow %}RESERVA TEMPORAL{% endblock %}
+{% block hero_titulo %}Mi apartado{% endblock %}
+{% block hero_texto %}Tus productos quedan apartados {{ minutos }} minutos. Confirma la compra antes de que se acabe el tiempo.{% endblock %}
+{% block titulo %}Mi apartado · Belleza Verdadera{% endblock %}
+{% block contenido %}
+{% if vence_en %}
+<div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2" role="status">
+  <strong id="contador" data-vence="{{ vence_en.isoformat() }}" data-segundos="{{ segundos }}">Reserva activa</strong>
+  <small class="text-secondary">El tiempo lo autoriza el servidor; al terminar, las unidades se liberan.</small>
+</div>
+{% endif %}
+<section class="card panel-belleza">
+  <div class="card-body p-4 p-lg-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div><h2 class="h4 mb-1">Productos apartados</h2><p class="text-secondary mb-0">Cada unidad que apartas deja de estar disponible para otras personas.</p></div>
+      <a class="btn btn-outline-secondary" href="{{ url_for('catalogo') }}">Seguir en el catálogo</a>
+    </div>
+    {% if productos %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr><th>Producto</th><th>Precio</th><th style="width:230px">Cantidad reservada</th><th>Subtotal</th><th>Acción</th></tr></thead>
+        <tbody>
+        {% for p in productos %}
+          <tr>
+            <td><div class="d-flex align-items-center gap-2">
+              {% if p.imagen %}<img class="thumb-producto" src="{{ p.imagen }}" alt="" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/producto-' ~ ((loop.index0 % 4) + 1) ~ '.svg') }}'">{% else %}<img class="thumb-producto" src="{{ url_for('static', filename='img/producto-' ~ ((loop.index0 % 4) + 1) ~ '.svg') }}" alt="">{% endif %}
+              <div><div class="fw-semibold">{{ p.nombre }}</div><small class="text-secondary">{{ p.categoria }}</small></div>
+            </div></td>
+            <td class="text-nowrap">${{ '%.2f'|format(p.precio) }}</td>
+            <td>
+              <form method="post" action="{{ url_for('actualizar_apartado', producto_id=p.id) }}" class="d-flex gap-2">
+                <input class="form-control" type="number" name="cantidad" min="1" max="{{ p.maximo }}" step="1" value="{{ p.cantidad }}" aria-label="Cantidad de {{ p.nombre }}" required>
+                <button class="btn btn-sm btn-outline-primary" type="submit">Actualizar</button>
+              </form>
+              <small class="text-secondary">Máximo posible: {{ p.maximo }}</small>
+            </td>
+            <td class="fw-semibold text-nowrap">${{ '%.2f'|format(p.subtotal) }}</td>
+            <td><form method="post" action="{{ url_for('eliminar_apartado', producto_id=p.id) }}"><button class="btn btn-sm btn-outline-danger" type="submit">Cancelar reserva</button></form></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <form method="post" action="{{ url_for('confirmar_apartado_ruta') }}" class="row g-3 align-items-end border-top pt-4">
+      <div class="col-md-5">
+        <label class="form-label" for="cliente_id">Cliente (opcional)</label>
+        <select class="form-select" name="cliente_id" id="cliente_id">
+          <option value="">Venta sin cliente registrado</option>
+          {% for c in clientes %}<option value="{{ c._id }}">{{ c.nombre }}{% if c.telefono %} · {{ c.telefono }}{% endif %}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3"><div class="text-secondary small">TOTAL</div><div class="display-6 fw-bold product-price">${{ '%.2f'|format(total) }} MXN</div></div>
+      <div class="col-md-4 text-md-end"><button class="btn btn-belleza btn-lg" type="submit">Confirmar compra</button></div>
+    </form>
+    {% else %}
+    <div class="alert alert-light mb-0">No tienes productos apartados. Ve al <a href="{{ url_for('catalogo') }}">catálogo</a> y aparta uno.</div>
+    {% endif %}
+  </div>
+</section>
+<script>
+(function () {
+  const contador = document.getElementById("contador");
+  if (!contador) return;
+  // Tiempo restante calculado por el servidor al renderizar la página
+  // (evita errores si el reloj del equipo está desajustado).
+  const inicio = performance.now();
+  const total = Number(contador.dataset.segundos) * 1000;
+  function pintar() {
+    const faltan = Math.max(0, total - (performance.now() - inicio));
+    const min = String(Math.floor(faltan / 60000)).padStart(2, "0");
+    const seg = String(Math.floor((faltan % 60000) / 1000)).padStart(2, "0");
+    contador.textContent = "Tiempo restante: " + min + ":" + seg;
+    if (faltan === 0) {
+      clearInterval(reloj);
+      // Pequeña espera para que el servidor ya considere vencida la reserva.
+      setTimeout(function () { location.reload(); }, 800);
+    }
+  }
+  const reloj = setInterval(pintar, 1000);
+  pintar();
+})();
+</script>
+{% endblock %}

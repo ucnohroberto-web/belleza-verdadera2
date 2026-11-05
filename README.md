@@ -1,4 +1,4 @@
-# Belleza Verdadera — Práctica 5 ampliada
+# Belleza Verdadera — Práctica 5 ampliada + Actividad 2: reserva temporal
 
 Aplicación Flask + MongoDB para productos, catálogo con imágenes, clientes, ventas, cancelaciones e inicio de sesión. Se conserva la colección `productos` y los campos originales `nombre`, `categoria`, `estado`; los campos nuevos `precio`, `stock` e `imagen` son compatibles con los productos anteriores.
 
@@ -23,6 +23,7 @@ Si no configuras credenciales, para uso local se crea el usuario `admin` con con
 - Registro de clientes.
 - Ventas con selección de productos, cálculo automático de subtotales y total, validación de existencias y descuento de inventario.
 - Historial de ventas; cancelación conservando el registro y devolviendo las existencias una sola vez.
+- **Reserva temporal (Actividad 2):** en el Catálogo se aparta 1 unidad por clic durante 5 minutos; otras personas ven "Sin disponibilidad temporal". En *Mi apartado* hay contador, cambio de cantidad, cancelación y confirmación de compra.
 - API REST original conservada: `GET/POST /api/productos` y `GET/PUT/DELETE /api/productos/ID`.
 
 ## Imágenes
@@ -36,3 +37,30 @@ Configura las variables `MONGO_URI`, `ADMIN_USER`, `ADMIN_PASSWORD`, `SECRET_KEY
 - `clientes`: datos de clientes.
 - `ventas`: detalle de productos y precios históricos, total, estado y fecha.
 - `usuarios`: usuario y hash de contraseña.
+
+## Reserva temporal
+**Recurso reservable:** unidades de un producto (modelo *cantidad*).
+
+| Campo (`productos`) | Significado |
+|---|---|
+| `stock` | existencias reales (campo que ya existía; equivale a `existencias`) |
+| `reservadas` | unidades apartadas temporalmente (nuevo, inicia en 0) |
+| disponibles | `stock - reservadas` (se calcula, no se guarda) |
+
+Colección `reservas`: `reserva_id` (folio del visitante en la sesión), `producto_id`, `cantidad`, `estado`, `creada_en`, `vence_en`. Índice único `(reserva_id, producto_id)` e índice en `vence_en`.
+
+**Reglas**
+- *Reservar*: un solo `find_one_and_update` con la condición `stock - reservadas >= cantidad`; si Atlas no modifica nada, se responde que otra persona lo apartó primero. Producto y reserva se cambian en una transacción.
+- *Cancelar / vencer*: se borra la reserva y se devuelve exactamente su cantidad a `reservadas`, una sola vez (`find_one_and_delete`). Las vencidas se liberan al cargar inicio, catálogo, ventas, apartado, agregar y confirmar.
+- *Confirmar*: transacción que revisa que la reserva siga vigente (el servidor vuelve a revisar la hora), resta `stock` y `reservadas`, inserta la venta (`origen: "apartado"`) y borra la reserva.
+- *Ventas directas* (pantalla Ventas) y *cerrar sesión* respetan/liberan lo apartado.
+- "Agotado" sigue siendo decisión de inventario; "Sin disponibilidad temporal" solo significa que hay reservas activas.
+
+**Requisito:** las transacciones necesitan MongoDB Atlas (o un replica set local). Un `mongod` local sin replica set las rechaza.
+
+**Datos anteriores:** al primer acceso la app asigna `reservadas: 0` (y `stock: 0` si faltaba) a los productos antiguos y crea los índices. Es idempotente.
+
+## Prueba con dos usuarios
+`python probar_reserva.py` (local) o, contra Render:
+`API_BASE_URL=https://tu-app.onrender.com ADMIN_USER=... ADMIN_PASSWORD=... python probar_reserva.py`
+Agrega `--vencimiento` para esperar 5 minutos y comprobar la liberación. La prueba manual (ventana normal + incógnito) está en `ENTREGA_Reserva_Temporal.md`.

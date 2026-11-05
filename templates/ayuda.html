@@ -5,12 +5,14 @@
   <div class="card-body p-4 p-lg-5">
     <h2 class="h4 mb-2">Ayuda del sistema</h2>
     <p class="text-secondary">Fecha del equipo: {{ fecha }}</p>
-    <div class="api-note mb-4"><strong>Base de datos:</strong> <code>belleza_verdadera</code> · <strong>Colección:</strong> <code>productos</code></div>
+    <div class="api-note mb-4"><strong>Base de datos:</strong> <code>belleza_verdadera</code> · <strong>Colección:</strong> <code>productos</code>, <code>reservas</code></div>
     <ol class="help-list">
       <li>Registra un producto con nombre, categoría y estado.</li>
       <li>Consulta los productos en la tabla de inventario.</li>
       <li>Usa <strong>Editar</strong> para modificar un registro.</li>
       <li>Usa <strong>Eliminar</strong> para borrar un registro de prueba.</li>
+      <li>En el <strong>Catálogo</strong> usa <strong>Apartar 1 unidad</strong>: el producto queda reservado 5 minutos y otras personas ya no lo ven disponible.</li>
+      <li>En <strong>Mi apartado</strong> puedes cambiar la cantidad, cancelar la reserva o confirmar la compra. Si el contador llega a cero, las unidades se liberan solas.</li>
       <li>La API está disponible en <code>/api/productos</code> y permite consultar, crear, editar y eliminar mediante solicitudes HTTP.</li>
     </ol>
     <a class="btn btn-belleza mt-3" href="{{ url_for('inicio') }}">Volver al inventario</a>
