@@ -1,0 +1,47 @@
+{% extends 'publico.html' %}
+{% block titulo %}{{ p.nombre }} · Belleza Verdadera{% endblock %}
+{% block cuerpo %}
+<article class="card panel-belleza overflow-hidden">
+  <div class="row g-0">
+    <div class="col-md-5">
+      <img class="product-image h-100" style="min-height:260px" alt="{{ p.nombre }}"
+           src="{{ p.imagen if p.imagen else url_for('static', filename='img/producto-1.svg') }}"
+           onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/producto-1.svg') }}'">
+    </div>
+    <div class="col-md-7"><div class="card-body p-4">
+      <span class="small text-secondary">{{ p.categoria }}</span>
+      <h1 class="h3 mt-1" style="font-family:'Playfair Display',serif">{{ p.nombre }}</h1>
+      <p class="product-price fs-4 mb-3">${{ '%.2f'|format(p.precio|default(0)|float) }} MXN</p>
+
+      {% if estado_clave == 'disponible' %}
+        <span class="status status-disponible">Disponible · {{ disponibles }} unidad(es)</span>
+      {% elif estado_clave == 'apartado' %}
+        <span class="status" style="color:#8a5a00;background:#fff3d6">Apartado temporalmente</span>
+        <p class="small text-secondary mt-2 mb-0">Otras personas tienen todas las unidades apartadas. Si no confirman su compra en {{ duracion }} minutos, se liberan automáticamente.</p>
+      {% else %}
+        <span class="status status-agotado">Agotado</span>
+      {% endif %}
+
+      <p class="small text-secondary mt-3 mb-0">Ficha consultada en Atlas al abrir esta página. Si el estado cambia, vuelve a escanear el mismo QR.</p>
+    </div></div>
+  </div>
+</article>
+
+<section class="card panel-belleza mt-4"><div class="card-body p-4 text-center">
+  <h2 class="h5">Código QR de esta ficha</h2>
+  {% if qr_listo %}
+    <img src="{{ url_for('ficha_qr', id=p._id) }}" width="220" height="220" alt="Código QR de la ficha de {{ p.nombre }}" class="my-2">
+    <div><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('ficha_qr', id=p._id) }}" download="qr-{{ p._id }}.png">Descargar QR</a></div>
+  {% else %}
+    <div class="alert alert-warning small">El generador de QR no está instalado (<code>pip install segno</code>).</div>
+  {% endif %}
+  <p class="small text-secondary mt-2 mb-0">Dirección codificada:<br><a href="{{ url_qr }}" class="text-break">{{ url_qr }}</a></p>
+  {% if url_local and session.get('usuario') %}
+    <div class="alert alert-warning small mt-3 mb-0 text-start">Este QR apunta a <strong>localhost</strong> y no abrirá desde un celular. Publica en Render o define la variable <code>APP_BASE_URL</code> con la URL pública.</div>
+  {% endif %}
+</div></section>
+
+{% if session.get('usuario') %}
+<p class="text-center mt-3"><a href="{{ url_for('catalogo') }}">← Volver al catálogo</a></p>
+{% endif %}
+{% endblock %}

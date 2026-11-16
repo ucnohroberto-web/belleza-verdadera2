@@ -1,1 +1,40 @@
-{% extends 'base.html' %}{% block hero_eyebrow %}NUESTRA COLECCIÓN{% endblock %}{% block hero_titulo %}Catálogo de productos{% endblock %}{% block hero_texto %}Descubre cada producto con su foto, precio y disponibilidad.{% endblock %}{% block titulo %}Catálogo · Belleza Verdadera{% endblock %}{% block contenido %}<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4"><div><h2 class="h4 mb-1">Todos los productos</h2><p class="text-secondary mb-0">Consulta fotos, precios y disponibilidad.</p></div><a class="btn btn-belleza" href="{{ url_for('registro_ventas') }}">Ir a ventas</a></div><div class="row g-4">{% for p in productos %}<div class="col-6 col-md-4 col-xl-3"><article class="card product-card h-100">{% if p.imagen %}<img src="{{ p.imagen }}" class="product-image" alt="{{ p.nombre }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/producto-' ~ ((loop.index0 % 4) + 1) ~ '.svg') }}'">{% else %}<img src="{{ url_for('static', filename='img/producto-' ~ ((loop.index0 % 4) + 1) ~ '.svg') }}" class="product-image" alt="{{ p.nombre }}" loading="lazy">{% endif %}<div class="card-body d-flex flex-column"><span class="small text-secondary">{{ p.categoria }}</span><h3 class="h6 mt-1">{{ p.nombre }}</h3><div class="mt-auto"><p class="product-price mb-1">${{ '%.2f'|format(p.precio|default(0)|float) }} MXN</p>{% if p.estado == 'Disponible' and p.stock|default(0)|int > 0 %}<span class="status status-disponible">{{ p.stock }} disponible(s)</span>{% else %}<span class="status status-agotado">Agotado</span>{% endif %}</div></div></article></div>{% else %}<div class="col-12"><div class="alert alert-light">Aún no hay productos en el catálogo. Agrégalos desde Registro e inventario.</div></div>{% endfor %}</div>{% endblock %}
+{% extends 'base.html' %}{% block hero_eyebrow %}NUESTRA COLECCIÓN{% endblock %}{% block hero_titulo %}Catálogo de productos{% endblock %}{% block hero_texto %}Descubre cada producto con su foto, precio y disponibilidad.{% endblock %}{% block titulo %}Catálogo · Belleza Verdadera{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+  <div><h2 class="h4 mb-1">Todos los productos</h2><p class="text-secondary mb-0">Consulta fotos, precios y disponibilidad. Aparta un producto para reservarlo {{ duracion_reserva }} minutos.</p></div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-secondary" href="{{ url_for('ver_apartado') }}">Mi apartado{% if cantidad_apartado %} ({{ cantidad_apartado }}){% endif %}</a>
+    <a class="btn btn-belleza" href="{{ url_for('registro_ventas') }}">Ir a ventas</a>
+  </div>
+</div>
+<div class="row g-4">
+{% for p in productos %}
+  <div class="col-6 col-md-4 col-xl-3"><article class="card product-card h-100">
+    {% if p.imagen %}<img src="{{ p.imagen }}" class="product-image" alt="{{ p.nombre }}" loading="lazy" onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/producto-' ~ ((loop.index0 % 4) + 1) ~ '.svg') }}'">{% else %}<img src="{{ url_for('static', filename='img/producto-' ~ ((loop.index0 % 4) + 1) ~ '.svg') }}" class="product-image" alt="{{ p.nombre }}" loading="lazy">{% endif %}
+    <div class="card-body d-flex flex-column">
+      <span class="small text-secondary">{{ p.categoria }}</span>
+      <h3 class="h6 mt-1">{{ p.nombre }}</h3>
+      <div class="mt-auto">
+        <p class="product-price mb-1">${{ '%.2f'|format(p.precio|default(0)|float) }} MXN</p>
+        {# Agotado es una decisión de inventario; "sin disponibilidad temporal" solo significa que hay reservas activas. #}
+        {% if p.estado != 'Disponible' or p.stock|default(0)|int <= 0 %}
+          <span class="status status-agotado">Agotado</span>
+        {% elif p.disponibles > 0 %}
+          <span class="status status-disponible">{{ p.disponibles }} disponible(s)</span>
+          <form method="post" action="{{ url_for('agregar_apartado', producto_id=p._id) }}" class="mt-2">
+            <button type="submit" class="btn btn-belleza btn-sm w-100">Apartar 1 unidad</button>
+          </form>
+        {% else %}
+          <span class="status status-agotado">0 disponible(s)</span>
+          <button type="button" class="btn btn-secondary btn-sm w-100 mt-2" disabled>Sin disponibilidad temporal</button>
+        {% endif %}
+        <a class="small d-block mt-2" href="{{ url_for('ficha_publica', id=p._id) }}">Ver ficha y QR</a>
+        {% if p.mias %}<p class="small text-secondary mt-2 mb-0">Tienes {{ p.mias }} apartada(s). <a href="{{ url_for('ver_apartado') }}">Ver apartado</a></p>{% endif %}
+      </div>
+    </div>
+  </article></div>
+{% else %}
+  <div class="col-12"><div class="alert alert-light">Aún no hay productos en el catálogo. Agrégalos desde Registro e inventario.</div></div>
+{% endfor %}
+</div>
+{% endblock %}
