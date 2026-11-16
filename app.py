@@ -1,3 +1,4 @@
+import io
 import os
 import secrets
 import uuid
@@ -6,10 +7,15 @@ from functools import wraps
 from urllib.parse import urlparse
 
 from bson import ObjectId
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, send_file, session, url_for
 from pymongo import MongoClient, ReturnDocument
 from pymongo.errors import PyMongoError
 from werkzeug.security import check_password_hash, generate_password_hash
+
+try:
+    import segno  # genera el código QR (pip install segno)
+except ImportError:  # la app sigue funcionando; solo se oculta la imagen del QR
+    segno = None
 
 app = Flask(__name__)
 app.config.update(
@@ -444,12 +450,115 @@ def confirmar_apartado_ruta():
         if not cliente_doc:
             flash("El cliente seleccionado no existe.", "danger"); return redirect(url_for("ver_apartado"))
     try:
-        confirmar_apartado(session.get("reserva_id"), cliente_doc, session.get("usuario", ""))
+        venta_id = confirmar_apartado(session.get("reserva_id"), cliente_doc, session.get("usuario", ""))
     except ErrorReserva as e:
         flash(str(e), "warning"); return redirect(url_for("ver_apartado"))
     session.pop("reserva_id", None)  # el folio queda cerrado; el próximo apartado crea otro
     flash("Compra confirmada. La venta quedó registrada y las existencias se actualizaron.", "success")
-    return redirect(url_for("registro_ventas"))
+    return redirect(url_for("comprobante_publico", id=str(venta_id)))
+
+
+# ---------------------------------------------------------------------------
+# Código QR + páginas PÚBLICAS (sin inicio de sesión) que abre el QR
+#   /ficha/<id>        ficha del producto con su disponibilidad actual
+#   /comprobante/<id>  comprobante de una compra confirmada (folio, productos, total, estado)
+# El QR solo contiene la dirección: la página consulta Atlas cada vez que se abre,
+# así que el MISMO QR muestra la información actualizada sin generar otro.
+# ---------------------------------------------------------------------------
+def url_base_publica():
+    """Dirección pública de la app. Prioridad: APP_BASE_URL > RENDER_EXTERNAL_URL (la pone Render) > la petición."""
+    base = os.environ.get("APP_BASE_URL") or os.environ.get("RENDER_EXTERNAL_URL") or request.host_url
+    return base.strip().rstrip("/")
+
+
+def url_es_local(url):
+    host = (urlparse(url).hostname or "").lower()
+    return host in ("localhost", "127.0.0.1", "0.0.0.0", "::1") or host.endswith(".local")
+
+
+def url_publica(endpoint, **valores):
+    return url_base_publica() + url_for(endpoint, **valores)
+
+
+def respuesta_qr(texto):
+    """Imagen PNG del QR para `texto` (la dirección de la página)."""
+    if segno is None:
+        abort(404, description="El generador de QR no está instalado en el servidor (pip install segno).")
+    salida = io.BytesIO()
+    segno.make(texto, error="m").save(salida, kind="png", scale=10, border=4)
+    salida.seek(0)
+    respuesta = send_file(salida, mimetype="image/png", max_age=0)
+    respuesta.headers["Cache-Control"] = "no-cache"
+    return respuesta
+
+
+try:
+    from zoneinfo import ZoneInfo
+    ZONA_LOCAL = ZoneInfo(os.environ.get("ZONA_HORARIA", "America/Mexico_City"))
+except Exception:  # sin base de datos de zonas horarias en el servidor: UTC-6 fijo
+    ZONA_LOCAL = timezone(timedelta(hours=-6))
+
+
+@app.template_filter("fecha_local")
+def fecha_local(valor):
+    if not valor:
+        return "—"
+    if valor.tzinfo is None:
+        valor = valor.replace(tzinfo=timezone.utc)
+    return valor.astimezone(ZONA_LOCAL).strftime("%d/%m/%Y %H:%M")
+
+
+def estado_publico(producto):
+    """Estado que ve el público: se calcula con lo que hay HOY en Atlas."""
+    if producto.get("estado") != "Disponible" or int(producto.get("stock", 0) or 0) <= 0:
+        return "agotado", "Agotado"
+    if disponibles_de(producto) > 0:
+        return "disponible", "Disponible"
+    return "apartado", "Apartado temporalmente"
+
+
+def buscar_venta(id):
+    if not ObjectId.is_valid(id):
+        abort(404, description="El comprobante solicitado no existe.")
+    venta = ventas.find_one({"_id": ObjectId(id)})
+    if venta is None:
+        abort(404, description="El comprobante solicitado no existe.")
+    return venta
+
+
+@app.route("/ficha/<id>")
+def ficha_publica(id):
+    liberar_reservas_vencidas()  # una reserva vencida ya no debe verse como apartada
+    producto = buscar_producto(id)
+    clave, etiqueta = estado_publico(producto)
+    url = url_publica("ficha_publica", id=id)
+    return render_template(
+        "ficha.html", p=producto, estado_clave=clave, estado_texto=etiqueta,
+        disponibles=disponibles_de(producto), url_qr=url, qr_listo=segno is not None,
+        url_local=url_es_local(url), duracion=DURACION_RESERVA_MINUTOS,
+    )
+
+
+@app.route("/ficha/<id>/qr.png")
+def ficha_qr(id):
+    buscar_producto(id)
+    return respuesta_qr(url_publica("ficha_publica", id=id))
+
+
+@app.route("/comprobante/<id>")
+def comprobante_publico(id):
+    venta = buscar_venta(id)
+    url = url_publica("comprobante_publico", id=id)
+    return render_template(
+        "comprobante.html", v=venta, folio="BV-" + str(venta["_id"])[-8:].upper(),
+        url_qr=url, qr_listo=segno is not None, url_local=url_es_local(url),
+    )
+
+
+@app.route("/comprobante/<id>/qr.png")
+def comprobante_qr(id):
+    buscar_venta(id)
+    return respuesta_qr(url_publica("comprobante_publico", id=id))
 
 
 @app.context_processor
@@ -581,9 +690,13 @@ def api_producto(id):
     return jsonify({"mensaje": "Producto eliminado correctamente.", "id": id}), 200
 
 
+RUTAS_PUBLICAS = ("/ficha/", "/comprobante/")
+
+
 @app.errorhandler(PyMongoError)
 def error_mongo(error):
     if es_peticion_api(): return jsonify({"error": "No fue posible trabajar con MongoDB. Revisa la conexión."}), 503
+    if request.path.startswith(RUTAS_PUBLICAS): return render_template("publico_error.html", mensaje="No fue posible consultar la información en este momento. Intenta de nuevo en unos minutos."), 503
     return render_template("error.html", mensaje="No fue posible trabajar con MongoDB. Revisa que el servicio esté iniciado y vuelve a intentar."), 503
 
 
@@ -593,6 +706,7 @@ def error_mongo(error):
 def error_peticion(error):
     mensaje = getattr(error, "description", "La petición no se pudo completar.")
     if es_peticion_api(): return jsonify({"error": mensaje}), error.code
+    if request.path.startswith(RUTAS_PUBLICAS): return render_template("publico_error.html", mensaje=mensaje), error.code
     return render_template("error.html", mensaje=mensaje), error.code
 
 

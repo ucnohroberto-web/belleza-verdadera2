@@ -1,4 +1,4 @@
-# Entrega — Actividad 2: reserva temporal
+# Entrega — Proyecto final: reserva temporal + código QR
 
 **Proyecto:** Belleza Verdadera  
 **Recurso que se reserva:** unidades de un producto (modelo *cantidad*: `stock` y `reservadas`).  
@@ -52,3 +52,40 @@ git push -u origin reserva-temporal
 - **Capturas:** reserva en Atlas · contador · usuarios A y B · cancelación o vencimiento.
 
 > Criterio de aceptación: un contador bonito sin bloqueo en Atlas no es reserva temporal. Aquí el bloqueo está en Atlas (`find_one_and_update` con condición de disponibilidad + transacciones) y el contador solo informa.
+
+
+---
+# Parte 2 del proyecto final: código QR
+
+## Qué se agregó
+| Elemento | Dónde |
+|---|---|
+| Ficha pública del producto (sin login) | `app.py` → `ficha_publica` · `templates/ficha.html` |
+| Comprobante público de compra | `app.py` → `comprobante_publico` · `templates/comprobante.html` |
+| Imagen QR (PNG) | `/ficha/<id>/qr.png` y `/comprobante/<id>/qr.png` (librería `segno`) |
+| Mensaje claro si no existe el registro | `templates/publico_error.html` |
+| Enlaces | Catálogo "Ver ficha y QR" · Ventas "Comprobante / QR" · tras Confirmar compra |
+
+## Pruebas obligatorias del PDF (7, 8, 9 y 10)
+| N.º | Prueba | Cómo hacerla | Evidencia |
+|---|---|---|---|
+| 7 | Escanear el QR desde el celular | Publica en Render, abre Catálogo → *Ver ficha y QR* y escanea con el celular | Foto o captura |
+| 8 | Cambiar el estado y escanear el mismo QR | Escanea la ficha, aparta la última unidad desde la PC y vuelve a escanear: dice *Apartado temporalmente*; confirma: dice *Agotado* | Dos capturas |
+| 9 | Identificador inexistente | Abre `https://TU-APP.onrender.com/ficha/000000000000000000000000` | Captura del mensaje |
+| 10 | Revisar en otro equipo | Abre la URL de Render en otra computadora o celular | Registro de prueba |
+
+`python probar_reserva.py` automatiza las pruebas 8 y 9 (ficha pública, comprobante, QR y errores).
+
+## Variables en Render
+`MONGO_URI`, `SECRET_KEY`, `ADMIN_USER`, `ADMIN_PASSWORD`, `COOKIE_SECURE=1`. `APP_BASE_URL` es opcional: Render ya entrega `RENDER_EXTERNAL_URL`, que se usa para armar la dirección del QR.
+
+## Historial de commits sugerido (mínimo 4)
+```bash
+git checkout -b proyecto-final
+git add . && git commit -m "Respaldo del proyecto del primer parcial"          # si aún no lo hiciste
+git add . && git commit -m "Integra reserva temporal y validación de disponibilidad"
+git add . && git commit -m "Agrega vencimiento, cancelación y confirmación"
+git add . && git commit -m "Agrega ficha pública, código QR y pruebas finales"
+git push -u origin proyecto-final
+```
+(Si ya hiciste commits de la reserva, solo te falta el último, que incluye el QR.)

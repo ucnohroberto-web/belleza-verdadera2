@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7b315d">
+<title>{% block titulo %}Belleza Verdadera{% endblock %}</title>
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo.svg') }}">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/estilos.css') }}">
+</head>
+<body>
+{# Página pública (se abre desde el QR): sin menú de administración ni datos privados. #}
+<nav class="navbar navbar-dark navbar-belleza">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('login') }}">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="" width="34" height="34">
+      <span class="brand-text">Belleza Verdadera</span>
+    </a>
+  </div>
+</nav>
+<main class="container py-4 py-lg-5" style="max-width: 880px;">
+  {% block cuerpo %}{% endblock %}
+</main>
+<footer class="container py-4 footer-belleza text-center small">Belleza Verdadera · Información consultada en tiempo real</footer>
+</body>
+</html>

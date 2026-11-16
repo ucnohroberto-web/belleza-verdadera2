@@ -28,6 +28,7 @@
           <span class="status status-agotado">0 disponible(s)</span>
           <button type="button" class="btn btn-secondary btn-sm w-100 mt-2" disabled>Sin disponibilidad temporal</button>
         {% endif %}
+        <a class="small d-block mt-2" href="{{ url_for('ficha_publica', id=p._id) }}">Ver ficha y QR</a>
         {% if p.mias %}<p class="small text-secondary mt-2 mb-0">Tienes {{ p.mias }} apartada(s). <a href="{{ url_for('ver_apartado') }}">Ver apartado</a></p>{% endif %}
       </div>
     </div>

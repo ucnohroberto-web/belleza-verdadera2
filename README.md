@@ -1,4 +1,4 @@
-# Belleza Verdadera — Práctica 5 ampliada + Actividad 2: reserva temporal
+# Belleza Verdadera — Proyecto final: reserva temporal + código QR
 
 Aplicación Flask + MongoDB para productos, catálogo con imágenes, clientes, ventas, cancelaciones e inicio de sesión. Se conserva la colección `productos` y los campos originales `nombre`, `categoria`, `estado`; los campos nuevos `precio`, `stock` e `imagen` son compatibles con los productos anteriores.
 
@@ -24,6 +24,7 @@ Si no configuras credenciales, para uso local se crea el usuario `admin` con con
 - Ventas con selección de productos, cálculo automático de subtotales y total, validación de existencias y descuento de inventario.
 - Historial de ventas; cancelación conservando el registro y devolviendo las existencias una sola vez.
 - **Reserva temporal (Actividad 2):** en el Catálogo se aparta 1 unidad por clic durante 5 minutos; otras personas ven "Sin disponibilidad temporal". En *Mi apartado* hay contador, cambio de cantidad, cancelación y confirmación de compra.
+- **Código QR (proyecto final):** cada producto tiene una ficha pública (`/ficha/<id>`) y cada compra confirmada un comprobante público (`/comprobante/<id>`), ambos con su QR descargable. Se abren sin iniciar sesión, desde el celular.
 - API REST original conservada: `GET/POST /api/productos` y `GET/PUT/DELETE /api/productos/ID`.
 
 ## Imágenes
@@ -64,3 +65,25 @@ Colección `reservas`: `reserva_id` (folio del visitante en la sesión), `produc
 `python probar_reserva.py` (local) o, contra Render:
 `API_BASE_URL=https://tu-app.onrender.com ADMIN_USER=... ADMIN_PASSWORD=... python probar_reserva.py`
 Agrega `--vencimiento` para esperar 5 minutos y comprobar la liberación. La prueba manual (ventana normal + incógnito) está en `ENTREGA_Reserva_Temporal.md`.
+
+## Código QR
+**Qué contiene:** solo la dirección de una página de la app, no los datos. Al abrirla, la página consulta Atlas en ese momento, así que **el mismo QR** muestra la información nueva (Disponible → Apartado temporalmente → Agotado; comprobante Confirmada → Cancelada).
+
+| Página pública | Dirección | Muestra |
+|---|---|---|
+| Ficha del producto | `/ficha/<id>` | Nombre, categoría, precio, imagen, estado y unidades disponibles |
+| Comprobante de compra | `/comprobante/<id>` | Folio `BV-XXXXXXXX`, fecha, productos, total y estado |
+
+- Dónde se ve: Catálogo → **Ver ficha y QR**; al **Confirmar compra** se abre el comprobante; en Ventas → **Comprobante / QR**.
+- **Privacidad:** no se muestran contraseñas, `MONGO_URI`, teléfonos, correos ni el nombre del cliente.
+- **Identificador inexistente o inválido:** mensaje claro con código 404 (la app no se detiene).
+- **Dirección del QR:** se arma con `APP_BASE_URL` si existe; si no, con `RENDER_EXTERNAL_URL` (Render la define sola); si no, con la dirección desde la que se abre la página. Si el QR apunta a `localhost` la app lo avisa: **no abre desde un celular**. En Render no necesitas configurar nada; si usas otro servidor, define `APP_BASE_URL=https://tu-dominio`.
+- Librería: `segno` (en `requirements.txt`). Si no está instalada la app sigue funcionando pero oculta la imagen del QR.
+- Variable opcional `ZONA_HORARIA` (por defecto `America/Mexico_City`) para la hora del comprobante.
+
+## Para el docente (completar antes de entregar)
+- **Integrantes:** _escribe aquí los nombres completos_
+- **Problema que resuelve:** control de inventario y ventas de una tienda de cuidado de la piel, evitando vender dos veces la misma unidad.
+- **Elemento reservado:** unidades de un producto · **Duración:** 5 minutos · **QR:** abre la ficha del producto / comprobante
+- **Enlace de Render:** _pega aquí_
+- **Capturas:** _agrega aquí las capturas principales_
