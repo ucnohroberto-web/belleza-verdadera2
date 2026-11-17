@@ -82,8 +82,9 @@ Agrega `--vencimiento` para esperar 5 minutos y comprobar la liberación. La pru
 - Variable opcional `ZONA_HORARIA` (por defecto `America/Mexico_City`) para la hora del comprobante.
 
 ## Para el docente (completar antes de entregar)
-- **Integrantes:** _escribe aquí los nombres completos_
+- **Integrantes:** _uc noh jesus roberto
+martinez trejo heidy sherlim_
 - **Problema que resuelve:** control de inventario y ventas de una tienda de cuidado de la piel, evitando vender dos veces la misma unidad.
 - **Elemento reservado:** unidades de un producto · **Duración:** 5 minutos · **QR:** abre la ficha del producto / comprobante
-- **Enlace de Render:** _pega aquí_
+- **Enlace de Render:** _https://belleza-verdadera2.onrender.com_
 - **Capturas:** _agrega aquí las capturas principales_
